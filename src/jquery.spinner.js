@@ -117,7 +117,8 @@
       .on('mousedown.spinner', "[data-spin='up'],[data-spin='down']", $.proxy(this.spin, this));
 
     $(document).on('mouseup.spinner', $.proxy(function(){
-      clearInterval(this.spinInterval);
+      clearTimeout(this.spinTimeout);
+	  clearInterval(this.spinInterval);
     }, this));
 
     options = $.extend({}, options);
@@ -148,9 +149,13 @@
 
         case 'mousedown':
           if(e.which === 1){
-            this.spinInterval = setInterval($.proxy(function(dir){
-              this.spinning.spin(dir);
-            }, this, $(e.currentTarget).data('spin')), 100);
+		    clearTimeout(this.spinTimeout);
+			clearInterval(this.spinInterval);
+            this.spinTimeout = setTimeout($.proxy(function(dir){
+              this.spinInterval = setInterval($.proxy(function(dir){
+                this.spinning.spin(dir);
+              }, this, $(e.currentTarget).data('spin')), 100);
+            }, this, $(e.currentTarget).data('spin')), 500);
           }
           break;
       }
@@ -203,3 +208,5 @@
     $('[data-trigger="spinner"]').spinner();
   });
 })(jQuery);
+
+
